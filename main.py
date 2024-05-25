@@ -3,11 +3,11 @@ import math
 import pygame
 import numpy as np
 from modelos.arboles import Arboles
-from utils.utileria import propagar_valor, K_V0, K_V245
+from utils.utileria import propagar_valor, K_V0, K_V245, K_V145, K_V190
 
 ## Determina un bosque aleatorio
 def inicializacion(x):
-    if x <= 0.67:
+    if x <= 0.6:
         return 1
     else:
         return 0
@@ -87,7 +87,7 @@ if __name__ == '__main__':
 
         # actualizar la cuadrícula
         # next_grid = np.ones_like(grid)
-        next_grid = propagar_valor(grid, K_V245)
+        next_grid = propagar_valor(grid, K_V0)
         '''
         for x in range(grid_size[0]):
             for y in range(grid_size[1]):

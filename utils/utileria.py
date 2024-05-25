@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.signal import convolve2d
+import time
 
 # Definir los kernels
 K_V0 = np.array([[0, 0, 0, 0, 0],
@@ -39,7 +40,6 @@ def propagar_valor(matriz, kernel):
 
     # Encontrar las posiciones de los valores 2
     posiciones = np.argwhere(matriz == 2)
-
     for (i, j) in posiciones:
         # Crear una matriz temporal con un 2 en la posición del 2
         temp = np.zeros_like(matriz)
@@ -52,7 +52,12 @@ def propagar_valor(matriz, kernel):
         mask = matriz != 0
         conv_result = conv_result * mask
 
+        resultado[i, j] = 0
+        conv_result[i, j] = 0
         # Actualizar el resultado con la propagación válida
         resultado = np.maximum(resultado, conv_result)
+
+    for (i, j) in posiciones:
         resultado[i, j] = 0
+
     return resultado
