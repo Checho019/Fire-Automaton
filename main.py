@@ -3,7 +3,7 @@ import math
 import pygame
 import numpy as np
 from modelos.arboles import Arboles
-from utils.utileria import propagar_valor, K_V0, K_V245, K_V145, K_V190
+from utils.utileria import propagar_valor, K_V0, K_V290, K_V145, K_V190
 
 ## Determina un bosque aleatorio
 def inicializacion(x):
@@ -12,12 +12,31 @@ def inicializacion(x):
     else:
         return 0
 
+def get_color(value):
+    assert 0 <= value <= 1, "El valor debe estar entre 0 y 1"
+
+    blue = np.array([0, 0, 255])
+    white = np.array([255, 255, 255])
+
+    color = value * blue + (1 - value) * white
+    return color
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    vect_inicializacion = np.vectorize(inicializacion)
-    arbolito = Arboles(1.5, 1.5, 1.5)
-    arbolito.mostrar_arbol()
+    alive_color = (69, 220, 118)
+    dead_color = (0, 0, 0)
+    burning_color = (227, 82, 82)
+    wings_color = (0, 0, 0)
+    wet_color = (0, 0, 255)
+
+    colores = {
+        0: dead_color,
+        1: alive_color,
+        2: burning_color,
+        3: wings_color,
+        4: wet_color,
+    }
 
     # inicializar Pygame
     pygame.init()
@@ -34,19 +53,20 @@ if __name__ == '__main__':
     grid_size = [height // 10, width // 10]
 
     # crear una matriz aleatoria para la cuadrícula
+    vect_inicializacion = np.vectorize(inicializacion)
     grid = np.random.rand(grid_size[0], grid_size[1])
     grid = vect_inicializacion(grid)
     estado_inicial = grid.copy()
-
+    humedad_grid = np.random.rand(grid_size[0], grid_size[1])
     # definir los colores de las células
-    alive_color = (69, 220, 118)
-    dead_color = (0, 0, 0)
-    burning_color = (227, 82, 82)
+
 
     # definir la duración de cada imagen en el GIF en milisegundos
     duration = 1000
 
     # ejecutar el bucle principal del juego
+    viento_view = False
+    humedad_view = False
     paused = False
     running = True
     while running:
@@ -68,7 +88,9 @@ if __name__ == '__main__':
                 elif event.key == pygame.K_r:
                     grid = estado_inicial.copy()
                 elif event.key == pygame.K_LSHIFT:
-                    print("Hola mundo")
+                    humedad_view = not humedad_view
+                elif event.key == pygame.K_v:
+                    viento_view = not viento_view
 
         ## Pausa
         if paused:
@@ -84,28 +106,18 @@ if __name__ == '__main__':
             pygame.display.flip()
             continue
 
+        if humedad_view:
+            screen.fill((255, 255, 255))
+            for x in range(grid_size[0]):
+                for y in range(grid_size[1]):
+                    rect = pygame.Rect(y * width // grid_size[1], x * height // grid_size[0], width // grid_size[1],
+                                       height // grid_size[0])
+                    pygame.draw.rect(screen, get_color(humedad_grid[x, y]), rect)
+            pygame.display.update()
+            continue
 
         # actualizar la cuadrícula
-        # next_grid = np.ones_like(grid)
-        next_grid = propagar_valor(grid, K_V0)
-        '''
-        for x in range(grid_size[0]):
-            for y in range(grid_size[1]):
-                if grid[x, y] == 2:
-                    # continue
-                    next_grid = propagar_valor(grid, K_V0)
-                    #grid_value = next_grid[min(x + 1, grid_size[0] - 1), y]
-                    #next_grid[min(x + 1, grid_size[0] - 1), y] = 2 if grid_value != 0 else 0
-                    #grid_value = next_grid[x, min(y + 1, grid_size[1] - 1)]
-                    #next_grid[x, min(y + 1, grid_size[1] - 1)] = 2 if grid_value != 0 else 0
-                    #grid_value = next_grid[max(x - 1, 0), y]
-                    #next_grid[max(x - 1, 0), y] = 2 if grid_value != 0 else 0
-                    #grid_value = next_grid[x, max(y - 1, 0)]
-                    #next_grid[x, max(y - 1, 0)] = 2 if grid_value != 0 else 0
-                    next_grid[x, y] = 0
-                elif grid[x, y] == 0:
-                    next_grid[x, y] = 0
-'''
+        next_grid = propagar_valor(grid, K_V290, humedad_grid)
         grid = next_grid
 
         # dibujar la cuadrícula en la pantalla
@@ -115,10 +127,8 @@ if __name__ == '__main__':
                 if grid[x, y] != 0:
                     rect = pygame.Rect(y * width // grid_size[1], x * height // grid_size[0], width // grid_size[1],
                                        height // grid_size[0])
-                    if grid[x, y] == 1:
-                        pygame.draw.rect(screen, alive_color, rect)
-                    else:
-                        pygame.draw.rect(screen, burning_color, rect)
+                    pygame.draw.rect(screen, colores[grid[x, y]], rect)
+
 
         # actualizar la pantalla
         pygame.display.update()
