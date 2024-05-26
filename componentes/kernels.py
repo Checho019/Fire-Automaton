@@ -1,4 +1,3 @@
-import random
 
 import numpy as np
 from scipy.signal import convolve2d
@@ -34,6 +33,7 @@ K_V290 = np.array([[0, 0, 0, 0, 0],
                    [0, 0, 1, 1, 1],
                    [0, 0, 0, 0, 0]])
 
+
 # Función para propagar el valor 2 usando un kernel, con la restricción de solo propagar en valores no 0
 def propagar_valor(matriz, kernel, humedad):
     # Crear una matriz donde se propagará el valor
@@ -41,7 +41,13 @@ def propagar_valor(matriz, kernel, humedad):
 
     # Encontrar las posiciones de los valores 2
     posiciones = np.argwhere(matriz == 2)
-    for (i, j) in posiciones:
+    posAux = []
+    for pos in posiciones:
+        i, j = pos
+        if humedad[i][j] <= 0.2:
+            posAux.append(pos)
+
+    for (i, j) in posAux:
         # Crear una matriz temporal con un 2 en la posición del 2
         temp = np.zeros_like(matriz)
         temp[i, j] = 2
@@ -64,6 +70,7 @@ def propagar_valor(matriz, kernel, humedad):
         resultado[i, j] = 0 if humedad[i, j] == 0 else 2
 
     return resultado
+
 
 def aplicar_agua(matriz, kernel, posicion, fuego):
     tamano_kernel = kernel.shape[0]
