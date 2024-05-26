@@ -2,7 +2,6 @@ import random
 
 import numpy as np
 from scipy.signal import convolve2d
-import time
 
 # Definir los kernels
 K_V0 = np.array([[0, 0, 0, 0, 0],
@@ -52,7 +51,7 @@ def propagar_valor(matriz, kernel, humedad):
 
         # Propagar el valor 2 solo en celdas donde matriz original no sea 0
         mask = (matriz != 0) * humedad
-        conv_result = np.where(mask >= 0.15, conv_result, 0)
+        conv_result = np.where(mask >= 0.65, conv_result, 0)
 
         # Actualizar el resultado con la propagación válida
         resultado = np.maximum(resultado, conv_result)
@@ -63,5 +62,23 @@ def propagar_valor(matriz, kernel, humedad):
             humedad[i, j] = max(0, humedad[i, j] - 0.05)
 
         resultado[i, j] = 0 if humedad[i, j] == 0 else 2
+
+    return resultado
+
+def aplicar_agua(matriz, kernel, posicion, fuego):
+    tamano_kernel = kernel.shape[0]
+    desplazamiento = tamano_kernel // 2
+    x, y = posicion
+    resultado = matriz.copy()
+
+    # Iterar sobre el kernel y la matriz de salida para aplicar los valores
+    for i in range(tamano_kernel):
+        for j in range(tamano_kernel):
+            if kernel[i, j] == 1:
+                nx, ny = x + i - desplazamiento, y + j - desplazamiento
+                if 0 <= nx < matriz.shape[0] and 0 <= ny < matriz.shape[1]:
+                    fuego[nx][ny] = 0 if fuego[nx][ny] == 2 else fuego[nx][ny]
+                    resultado[nx, ny] = 1
+    resultado[x][y] = 1
 
     return resultado
