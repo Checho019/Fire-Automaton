@@ -19,5 +19,3 @@ Este programa fue construido con Python 3.11 haciendo uso de las siguientes libr
 - R : Resetear simulación.
 - 0, 1, 2 : Velocidades del aire.
 - Flechas del teclado : Dirección del aire.
-
-## Licencia
