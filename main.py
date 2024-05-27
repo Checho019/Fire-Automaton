@@ -59,6 +59,8 @@ if __name__ == '__main__':
                     paused = not paused
                 elif event.key == pygame.K_r:
                     grid = estado_inicial.copy()
+                    humedad_grid = humedad_inicial.copy()
+                    que.quemado = 0
                 elif event.key == pygame.K_LSHIFT:
                     humedad_view = not humedad_view
                 elif event.key == pygame.K_a:
@@ -121,7 +123,12 @@ if __name__ == '__main__':
                     if not humedad_view:
                         pygame.draw.rect(screen, estados[grid[x, y]], rect)
                     else:
-                        pygame.draw.rect(screen, get_color(humedad_grid[x, y]), rect)
+                        val = humedad_grid[x, y]
+                        if val == 0:
+                            val = 1
+                        elif val == 1:
+                            val = 0
+                        pygame.draw.rect(screen, get_color(val), rect)
 
         # actualizar la pantalla
         pygame.display.update()

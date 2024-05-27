@@ -21,5 +21,5 @@ def get_color(value):
     blue = np.array([0, 0, 255])
     white = np.array([255, 255, 255])
 
-    color = value * blue + (1 - value) * white
+    color = value * white + (1 - value) * blue
     return color

@@ -33,7 +33,8 @@ K_V290 = np.array([[0, 0, 0, 0, 0],
                    [0, 0, 1, 1, 1],
                    [0, 0, 0, 0, 0]])
 
-
+class que:
+    quemado = float(0)
 # Función para propagar el valor 2 usando un kernel, con la restricción de solo propagar en valores no 0
 def propagar_valor(matriz, kernel, humedad):
     # Crear una matriz donde se propagará el valor
@@ -67,7 +68,12 @@ def propagar_valor(matriz, kernel, humedad):
             resultado[i, j] = 2
             humedad[i, j] = max(0, humedad[i, j] - 0.05)
 
-        resultado[i, j] = 0 if humedad[i, j] == 0 else 2
+        if humedad[i, j] == 0:
+            resultado[i, j] = 0
+            que.quemado += 0.056
+            print(que.quemado)
+        else:
+            resultado[i, j] = 2
 
     return resultado
 
@@ -84,7 +90,10 @@ def aplicar_agua(matriz, kernel, posicion, fuego):
             if kernel[i, j] == 1:
                 nx, ny = x + i - desplazamiento, y + j - desplazamiento
                 if 0 <= nx < matriz.shape[0] and 0 <= ny < matriz.shape[1]:
-                    fuego[nx][ny] = 0 if fuego[nx][ny] == 2 else fuego[nx][ny]
+                    if fuego[nx][ny] == 2:
+                        fuego[nx][ny] = 0
+                        que.quemado += 0.056
+                        print(que.quemado)
                     resultado[nx, ny] = 1
     resultado[x][y] = 1
 

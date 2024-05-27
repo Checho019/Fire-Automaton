@@ -28,24 +28,23 @@ def convertir_color_a_valor(color):
     return 0
 
 
-def convertir_color_a_humedad(color):
-    r, g, b = color
-    if b > 100 or b == 0:
+def convertir_color_a_humedad(estado):
+    humedad_limites = [0.2, 0.4]
+    if estado == 0 or estado == 5:
         return 1
-    return np.random.uniform(0.6, 0.8)
+    return np.random.uniform((1 - humedad_limites[1]), (1 - humedad_limites[0]))
 
 
 def espacio_imagen(matriz):
     alto, ancho, _ = matriz.shape
     matriz_grid = np.zeros((alto, ancho), dtype=np.uint8)
     matriz_humedad = np.zeros((alto, ancho))
-
     for y in range(alto):
         for x in range(ancho):
             color = matriz[y, x]
             matriz_grid[y, x] = convertir_color_a_valor(color)
-            matriz_humedad[y, x] = convertir_color_a_humedad(color)
-
+            matriz_humedad[y, x] = convertir_color_a_humedad(matriz_grid[y, x])
+    print(np.sum(matriz_grid != 0))
     return matriz_grid, matriz_humedad
 
 
